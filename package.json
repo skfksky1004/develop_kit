@@ -1,7 +1,7 @@
 {
   "name": "com.skfksky1004.develop_kit",			
   "displayName": "My DevelopKit",  
-  "version": "1.0.0",                      		
+  "version": "1.0.1",                      		
   "unity": "2021.3",                   
   "description": "This is a custom Unity package for common utilities.",
   "keywords": ["utility", "custom", "tool"],
