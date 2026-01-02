@@ -27,13 +27,15 @@ namespace skfksky1004.DevKit
         {
             if (Selection.objects.Length <= 0 ||
                 Selection.objects.Length > 1)
+            {
                 return;
+            }
 
             var textAsset = LoadTable();
             if (textAsset is null)
                 return;
 
-            var values = textAsset.text.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+            var values = textAsset.text.Split(new char[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
             var fieldName = values[0].Split(',').ToList();
             var checkIndex = fieldName.FindIndex(x => x == CheckEnumName);
 
@@ -47,7 +49,7 @@ namespace skfksky1004.DevKit
                     continue;
 
                 var checkValue = value.Split(',').ToList();
-                if (!enumList.TryGetValue(checkValue[checkIndex], out var list))
+                if (enumList.TryGetValue(checkValue[checkIndex], out var list) == false)
                 {
                     enumList.Add(checkValue[checkIndex], new List<string>());
                     list = enumList[checkValue[checkIndex]];
@@ -63,7 +65,7 @@ namespace skfksky1004.DevKit
         }
 
         /// <summary>
-        ///     CSV 내용
+        /// CSV 내용
         /// </summary>
         private static TextAsset LoadTable()
         {
@@ -74,17 +76,20 @@ namespace skfksky1004.DevKit
         }
 
         /// <summary>
-        ///     파일 쓰기
+        /// 파일 쓰기
         /// </summary>
         /// <param name="path"></param>
         /// <param name="typeList"></param>
         private static void WriteFile(string path, Dictionary<string, List<string>> typeList)
         {
             var directoryInfo = new DirectoryInfo(Path.GetDirectoryName(path) ?? string.Empty);
-            if (!directoryInfo.Exists) directoryInfo.Create();
+            if (directoryInfo.Exists == false)
+            {
+                directoryInfo.Create();
+            }
 
             var fileStream = new FileStream(path, FileMode.OpenOrCreate, FileAccess.Write);
-            var writer = new StreamWriter(fileStream, Encoding.Unicode);
+            var writer = new StreamWriter(fileStream, System.Text.Encoding.Unicode);
 
             writer.WriteLine(CreateScript(typeList));
 
@@ -92,20 +97,20 @@ namespace skfksky1004.DevKit
         }
 
         /// <summary>
-        ///     파일 읽기
+        /// 파일 읽기
         /// </summary>
         /// <param name="path"></param>
         private static void ReadFile(string path)
         {
             var fileInfo = new FileInfo(path);
-            if (!fileInfo.Exists)
+            if (fileInfo.Exists == false)
                 return;
 
             fileInfo.Delete();
         }
 
         /// <summary>
-        ///     C# 스크립트 생성
+        /// C# 스크립트 생성
         /// </summary>
         /// <param name="enumList"></param>
         /// <returns></returns>
@@ -120,7 +125,10 @@ namespace skfksky1004.DevKit
                 sb.AppendLine("{");
 
                 var typeList = enumList[enumName].ToList();
-                foreach (var strType in typeList) sb.AppendLine($"    {strType},");
+                foreach (var strType in typeList)
+                {
+                    sb.AppendLine($"    {strType},");
+                }
 
                 sb.AppendLine("}");
                 sb.AppendLine("\n");

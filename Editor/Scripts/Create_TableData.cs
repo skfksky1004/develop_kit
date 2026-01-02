@@ -19,6 +19,7 @@ namespace skfksky1004.DevKit
     public class Create_TableData : Editor
     {
         private const string FilePath = "Assets/Scripts/TableData";
+        private const string OneTab = "     ";
 
         [MenuItem("Assets/Table/Convert_TableData")]
         public static void Convert()
@@ -28,7 +29,7 @@ namespace skfksky1004.DevKit
                 if (!(obj is TextAsset textAsset))
                     return;
 
-                var values = textAsset.text.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+                var values = textAsset.text.Split(new char[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
                 var fieldName = values[0].Split(',').ToList();
 
                 var fileName = textAsset.name
@@ -38,23 +39,27 @@ namespace skfksky1004.DevKit
 
                 var fullPath = $"{FilePath}/{resultFileName}.cs";
                 ReadFile(fullPath);
-                WriteFile(fullPath, resultFileName, fieldName);
+                WriteFile_Data(fullPath, resultFileName, fieldName);
+                WriteFile_Table(resultFileName, fieldName.FirstOrDefault());
             }
         }
 
         /// <summary>
-        ///     파일 쓰기
+        /// 파일 쓰기
         /// </summary>
         /// <param name="path"></param>
         /// <param name="fileName"></param>
         /// <param name="typeList"></param>
-        private static void WriteFile(string path, string fileName, List<string> typeList)
+        private static void WriteFile_Data(string path, string fileName, List<string> typeList)
         {
             var directoryInfo = new DirectoryInfo(Path.GetDirectoryName(path) ?? string.Empty);
-            if (!directoryInfo.Exists) directoryInfo.Create();
+            if (directoryInfo.Exists == false)
+            {
+                directoryInfo.Create();
+            }
 
             var fileStream = new FileStream(path, FileMode.OpenOrCreate, FileAccess.Write);
-            var writer = new StreamWriter(fileStream, Encoding.Unicode);
+            var writer = new StreamWriter(fileStream, System.Text.Encoding.Unicode);
 
             writer.WriteLine(CreateScript(fileName, typeList));
 
@@ -62,20 +67,20 @@ namespace skfksky1004.DevKit
         }
 
         /// <summary>
-        ///     파일 읽기
+        /// 파일 읽기
         /// </summary>
         /// <param name="path"></param>
         private static void ReadFile(string path)
         {
             var fileInfo = new FileInfo(path);
-            if (!fileInfo.Exists)
+            if (fileInfo.Exists == false)
                 return;
 
             fileInfo.Delete();
         }
 
         /// <summary>
-        ///     C# 스크립트 생성
+        /// C# 스크립트 생성
         /// </summary>
         /// <param name="fileName"></param>
         /// <param name="constantList"></param>
@@ -89,45 +94,134 @@ namespace skfksky1004.DevKit
 
             foreach (var strType in constantList)
             {
-                sb.Append("     ");
-                if (strType.Contains("i_"))
-                {
-                    var value = strType.Replace("i_", "");
-                    sb.AppendLine($"public int {value};");
-                }
-                else if (strType.Contains("f_"))
-                {
-                    var value = strType.Replace("f_", "");
-                    sb.AppendLine($"public float {value};");
-                }
-                else if (strType.Contains("s_"))
-                {
-                    var value = strType.Replace("s_", "");
-                    sb.AppendLine($"public string {value};");
-                }
-                else if (strType.Contains("b_"))
-                {
-                    var value = strType.Replace("b_", "");
-                    sb.AppendLine($"public bool {value};");
-                }
-                else if (strType.Contains("sh_"))
-                {
-                    var value = strType.Replace("sh_", "");
-                    sb.AppendLine($"public short {value};");
-                }
-                else if (strType.Contains("d_"))
-                {
-                    var value = strType.Replace("d_", "");
-                    sb.AppendLine($"public double {value};");
-                }
+                var type = GetType(strType, out var value);
+                if (string.IsNullOrEmpty(value))
+                    continue;
+
+                sb.Append(OneTab);
+                sb.AppendLine($"public {type} {value};");
             }
 
-            // sb.AppendLine(" ");
-            // sb.AppendLine("     public override void ParseData(string[] arrVariables, string[] arrValues)");
-            // sb.AppendLine("     {");
-            // sb.AppendLine("     }");
             sb.AppendLine("}");
             return sb.ToString();
         }
+
+        /// <summary>
+        /// 파일 쓰기
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="fileName"></param>
+        /// <param name="typeList"></param>
+        private static void WriteFile_Table(string fileName, string typeFirst)
+        {
+            var dataName = fileName.Clone().ToString();
+            fileName = $"TableManager_{fileName.Replace("Data", "")}";
+            var path = $"Assets/Scripts/TableData/TableManagers/{fileName}.cs";
+
+            //  해당 파일까지의 폴더 확인후 없으면 생성
+            var directoryInfo = new DirectoryInfo(Path.GetDirectoryName(path) ?? string.Empty);
+            if (directoryInfo.Exists == false)
+            {
+                directoryInfo.Create();
+            }
+
+            //  해당 파일이 없다면 생성 있다면 작업종료
+            if (File.Exists(path))
+                return;
+
+            var fileStream = new FileStream(path, FileMode.OpenOrCreate, FileAccess.Write);
+            var writer = new StreamWriter(fileStream, System.Text.Encoding.Unicode);
+
+            writer.WriteLine(CreateTableScript(fileName, dataName, typeFirst));
+
+            writer.Close();
+        }
+
+        private static string CreateTableScript(string fileName, string dataName, string typeFirst)
+        {
+            var typeResult = GetType(typeFirst, out var s);
+
+            var sb = new StringBuilder();
+
+            sb.AppendLine("using System.Collections.Generic;");
+            sb.AppendLine();
+
+            sb.AppendLine("namespace Table");
+            sb.AppendLine("{");
+
+            sb.Append(OneTab);
+            sb.AppendLine($"public partial class {fileName} : {nameof(Table.Table_Interface)}");
+
+            sb.Append(OneTab);
+            sb.AppendLine($"" + "{");
+
+            sb.Append(OneTab);
+            sb.Append(OneTab);
+            sb.AppendLine($"public Dictionary<int, {dataName}> Dic{dataName}s = new Dictionary<int, {dataName}>();");
+
+            sb.AppendLine(OneTab);
+
+            sb.Append(OneTab);
+            sb.Append(OneTab);
+            sb.AppendLine("public bool IsLoadSuccess { get; set; } = false;");
+
+            sb.Append(OneTab);
+            sb.AppendLine("}");
+
+            sb.AppendLine("}");
+
+            return sb.ToString();
+        }
+
+        private static string GetType(string strTable, out string value)
+        {
+            var strType = strTable;
+            if (strType.Contains("f_"))
+            {
+                value = strType.Replace("f_", "");
+                return "float";
+            }
+            else if (strType.Contains("i_"))
+            {
+                value = strType.Replace("i_", "");
+                return "int";
+            }
+            else if (strType.Contains("is_"))
+            {
+                value = strType.Replace("is_", "");
+                return "bool";
+            }
+            else if (strType.Contains("sh_"))
+            {
+                value = strType.Replace("sh_", "");
+                return "short";
+            }
+            else if (strType.Contains("d_"))
+            {
+                value = strType.Replace("d_", "");
+                return "double";
+            }
+            else if (strType.Contains("b_"))
+            {
+                value = strType.Replace("b_", "");
+                return "byte";
+            }
+            else if (strType.Contains("s_"))
+            {
+                value = strType.Replace("s_", "");
+                return "string";
+            }
+
+            value = string.Empty;
+            return "string";
+        }
+    }
+}
+
+namespace Table
+{
+    public interface Table_Interface
+    {
+        public bool IsLoadSuccess { get; set; }
     }
 }

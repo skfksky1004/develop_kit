@@ -40,21 +40,21 @@ namespace skfksky1004.DevKit
                 return;
             }
 
-            if (!textAsset.name.Equals(LoadFileName))
+            if (textAsset.name.Equals(LoadFileName) == false)
             {
                 Debug.LogWarning("Constant 테이블을 선택해 주세요.");
                 return;
             }
 
-            var values = textAsset.text.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+            var values = textAsset.text.Split(new char[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
             var fieldName = values[0].Split(',').ToList();
             var checkIndex = fieldName.FindIndex(x => x == CheckFieldName);
 
-            var typeList = new List<KeyValuePair<string, string>>();
-            for (var i = 1; i < values.Length; i++)
+            List<KeyValuePair<string, string>> typeList = new List<KeyValuePair<string, string>>();
+            for (int i = 1; i < values.Length; i++)
             {
                 var fieldValue = values[i].Split(',');
-                if (fieldValue.Length >= checkIndex && !string.IsNullOrEmpty(fieldValue[checkIndex]))
+                if (fieldValue.Length >= checkIndex && string.IsNullOrEmpty(fieldValue[checkIndex]) == false)
                 {
                     var key = fieldValue[checkIndex];
                     var value = fieldValue[checkIndex + 1];
@@ -68,27 +68,33 @@ namespace skfksky1004.DevKit
         }
 
         /// <summary>
-        ///     CSV 내용
+        /// CSV 내용
         /// </summary>
         private static TextAsset LoadTable()
         {
-            if (Selection.objects.FirstOrDefault() is TextAsset asset) return asset;
+            if (Selection.objects.FirstOrDefault() is TextAsset asset)
+            {
+                return asset;
+            }
 
             return null;
         }
 
         /// <summary>
-        ///     파일 쓰기
+        /// 파일 쓰기
         /// </summary>
         /// <param name="path"></param>
         /// <param name="typeList"></param>
         private static void WriteFile(string path, List<KeyValuePair<string, string>> typeList)
         {
             var directoryInfo = new DirectoryInfo(Path.GetDirectoryName(path) ?? string.Empty);
-            if (!directoryInfo.Exists) directoryInfo.Create();
+            if (directoryInfo.Exists == false)
+            {
+                directoryInfo.Create();
+            }
 
             var fileStream = new FileStream(path, FileMode.OpenOrCreate, FileAccess.Write);
-            var writer = new StreamWriter(fileStream, Encoding.Unicode);
+            var writer = new StreamWriter(fileStream, System.Text.Encoding.Unicode);
 
             writer.WriteLine(CreateScript(typeList));
 
@@ -96,20 +102,20 @@ namespace skfksky1004.DevKit
         }
 
         /// <summary>
-        ///     파일 읽기
+        /// 파일 읽기
         /// </summary>
         /// <param name="path"></param>
         private static void ReadFile(string path)
         {
             var fileInfo = new FileInfo(path);
-            if (!fileInfo.Exists)
+            if (fileInfo.Exists == false)
                 return;
 
             fileInfo.Delete();
         }
 
         /// <summary>
-        ///     C# 스크립트 생성
+        /// C# 스크립트 생성
         /// </summary>
         /// <param name="constantList"></param>
         /// <returns></returns>
@@ -133,20 +139,28 @@ namespace skfksky1004.DevKit
         }
 
         /// <summary>
-        ///     형태에 맞는 스트링
+        /// 형태에 맞는 스트링
         /// </summary>
         /// <param name="strValue"></param>
         /// <returns></returns>
         private static string GetCheckValueType(string strValue)
         {
-            if (strValue.Contains(".")) return "float";
+            if (strValue.Contains("."))
+            {
+                return "float";
+            }
 
             var value = System.Convert.ToInt64(strValue);
             if (value > 0)
             {
-                if (int.MaxValue < value) return "long";
-
-                if (short.MaxValue >= value) return "short";
+                if (int.MaxValue < value)
+                {
+                    return "long";
+                }
+                else if (short.MaxValue >= value)
+                {
+                    return "short";
+                }
             }
 
             return "int";
