@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
+#if UNITY_EDITOR
+
 namespace skfksky1004.DevKit
 {
     public class FinderMissingReference : EditorWindow
@@ -113,3 +115,5 @@ namespace skfksky1004.DevKit
         }
     }
 }
+
+#endif

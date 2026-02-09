@@ -6,6 +6,8 @@ using System.Text;
 using UnityEditor;
 using UnityEngine;
 
+#if UNITY_EDITOR
+
 namespace skfksky1004.DevKit
 {
     /// <summary>
@@ -167,3 +169,4 @@ namespace skfksky1004.DevKit
         }
     }
 }
+#endif

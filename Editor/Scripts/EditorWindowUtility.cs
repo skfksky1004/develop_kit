@@ -3,6 +3,9 @@ using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
+#if UNITY_EDITOR
+
+
 namespace skfksky1004.DevKit
 {
     public static class EditorWindowUtility
@@ -73,3 +76,5 @@ namespace skfksky1004.DevKit
         }
     }
 }
+
+#endif
