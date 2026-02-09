@@ -216,6 +216,14 @@ namespace skfksky1004.DevKit.UI
             }
         }
 
+        public void ClearItem()
+        {
+            foreach (var item in ScrollItemList)
+                scrollPool.PushItem(item);
+            
+            ScrollItemList.Clear();
+        }
+        
         /// <summary>
         /// 스크롤 설정 값에 맞게 스크롤 컴포넌트 셋팅 변경
         /// </summary>
