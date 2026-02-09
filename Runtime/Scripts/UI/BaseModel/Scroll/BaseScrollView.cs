@@ -216,7 +216,7 @@ namespace skfksky1004.DevKit.UI
             }
         }
 
-        public void ClearItem()
+        public void ClearItems()
         {
             foreach (var item in ScrollItemList)
                 scrollPool.PushItem(item);
