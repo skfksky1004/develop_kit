@@ -52,16 +52,17 @@ namespace skfksky1004.DevKit.UI
 
         protected void OnEnable()
         {
-            ScrollRect.onValueChanged.AddListener(OnValueChanged_Scroll);
+            ScrollRect?.onValueChanged.AddListener(OnValueChanged_Scroll);
         }
 
         protected void OnDisable()
         {
-            ScrollRect.onValueChanged.RemoveListener(OnValueChanged_Scroll);
+            ScrollRect?.onValueChanged.RemoveListener(OnValueChanged_Scroll);
         }
 
         public void InitScroll<T>(List<T> list) where T : BaseScrollData
         {
+            ClearItems();
             ScrollDataList.Clear();
             ScrollDataList.AddRange(list);
 
@@ -312,7 +313,7 @@ namespace skfksky1004.DevKit.UI
                         {
                             for (int i = 0; i < count; i++)
                             {
-                                //  ����
+                                //  가려짐
                                 for (int line = 0; line < LineRow; line++)
                                 {
                                     var prevItem = ScrollItemList.FirstOrDefault();
@@ -327,7 +328,7 @@ namespace skfksky1004.DevKit.UI
                                     }
                                 }
 
-                                //  ����
+                                //  추가
                                 for (int line = 0; line < LineRow; line++)
                                 {
                                     var nextIndex = lastIndex + 1;
@@ -357,7 +358,7 @@ namespace skfksky1004.DevKit.UI
                         {
                             for (int i = 0; i < count; i++)
                             {
-                                //  ����
+                                //  가려짐
                                 for (int line = 0; line < LineRow; line++)
                                 {
                                     var prevItem = ScrollItemList.LastOrDefault();
@@ -372,7 +373,7 @@ namespace skfksky1004.DevKit.UI
                                     }
                                 }
 
-                                //  ����
+                                //  추가
                                 for (int line = 0; line < LineRow; line++)
                                 {
                                     if (firstIndex <= 0)
@@ -409,7 +410,7 @@ namespace skfksky1004.DevKit.UI
                         {
                             for (int i = 0; i < count; i++)
                             {
-                                //  ����
+                                //  가려짐
                                 for (int line = 0; line < LineRow; line++)
                                 {
                                     var prevItem = ScrollItemList.FirstOrDefault();
@@ -425,7 +426,7 @@ namespace skfksky1004.DevKit.UI
                                     }
                                 }
 
-                                //  ����
+                                //  추가
                                 for (int line = 0; line < LineRow; line++)
                                 {
                                     var nextIndex = lastIndex + 1;
@@ -459,7 +460,7 @@ namespace skfksky1004.DevKit.UI
                                     ? createCount % LineRow
                                     : LineRow;
 
-                                //  ����
+                                //  가려짐
                                 for (int line = 0; line < tempMax; line++)
                                 {
                                     var prevItem = ScrollItemList.LastOrDefault();
@@ -475,7 +476,7 @@ namespace skfksky1004.DevKit.UI
                                     }
                                 }
 
-                                //  ����
+                                //  추가
                                 for (int line = 0; line < LineRow; line++)
                                 {
                                     if (firstIndex <= 0)
@@ -729,7 +730,7 @@ namespace skfksky1004.DevKit.UI
                 if (pos > maxWidth)
                     return new Vector2(maxWidth, contentPos.y);
 
-                return contentPos;
+                return new Vector2(pos, contentPos.y);
             }
             else if (scrollType == eScrollType.Right_To_Left)
             {

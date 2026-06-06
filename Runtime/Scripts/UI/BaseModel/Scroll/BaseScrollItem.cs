@@ -24,11 +24,6 @@ namespace skfksky1004.DevKit.UI
         private BaseScrollData scrollData;
         public long ItemIndex => scrollData.Index;
 
-        private void Awake()
-        {
-            Rect.sizeDelta = ItemSize;
-        }
-
         public virtual void UpdateItem(BaseScrollData data)
         {
             scrollData = data;
