@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-namespace skfksky1004.DevKit.UI
+namespace GameCreateTool.DevKit.UI
 {
     [RequireComponent(typeof(Button))]
     public class ButtonEx : MonoBehaviour

@@ -6,7 +6,7 @@ using Object = UnityEngine.Object;
 #if UNITY_EDITOR
 
 
-namespace skfksky1004.DevKit
+namespace GameCreateTool.DevKit
 {
     public static class EditorWindowUtility
     {

@@ -4,7 +4,7 @@ using UnityEngine;
 
 #if UNITY_EDITOR
 
-namespace skfksky1004.DevKit
+namespace GameCreateTool.DevKit
 {
     public class FinderMissingReference : EditorWindow
     {

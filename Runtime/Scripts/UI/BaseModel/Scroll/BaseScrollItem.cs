@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace skfksky1004.DevKit.UI
+namespace GameCreateTool.DevKit.UI
 {
     public interface ScrollIndex
     {

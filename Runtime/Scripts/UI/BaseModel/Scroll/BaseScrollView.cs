@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 
-namespace skfksky1004.DevKit.UI
+namespace GameCreateTool.DevKit.UI
 {
     [RequireComponent(typeof(ScrollRect))]
     [RequireComponent(typeof(BaseScrollPool))]
@@ -137,9 +137,7 @@ namespace skfksky1004.DevKit.UI
                     }
 
                     //  초기 셋팅시 스크롤 페이지 번호 저장
-                    PrevPageNo = scrollType == eScrollType.Top_To_Down
-                        ? 0
-                        : MaxPageNo;
+                    PrevPageNo = 0;
 
                     break;
                 }
@@ -294,7 +292,7 @@ namespace skfksky1004.DevKit.UI
         /// <summary>
         /// 스크롤 업데이트
         /// </summary>
-        /// <param name="pos">스크롤 Content 위치 변</param>
+        /// <param name="pos">스크롤 Content 위치 변경</param>
         protected virtual void OnValueChanged_Scroll(Vector2 pos)
         {
             var contentPos = GetScrollContentsPosition();
@@ -399,18 +397,18 @@ namespace skfksky1004.DevKit.UI
                 }
                 case eScrollType.Bottom_To_Up:
                 {
-                    // var contentPos = GetScrollContentsPosition();
-                    var pageNo = Mathf.FloorToInt(contentPos.y / ScrollItem.ItemSize.y) - LineRow;
+                    var pageNo = Mathf.FloorToInt(contentPos.y / ScrollItem.ItemSize.y);
                     var count = Mathf.Abs(pageNo - PrevPageNo);
 
-                    if (pageNo < PrevPageNo && pageNo >= 0)
+                    //  위로 스크롤 (높은 인덱스 아이템 등장)
+                    if (pageNo > PrevPageNo && pageNo <= MaxPageNo)
                     {
                         var lastIndex = (int)ScrollItemList.LastOrDefault()?.ItemIndex;
                         if (lastIndex < createCount)
                         {
                             for (int i = 0; i < count; i++)
                             {
-                                //  가려짐
+                                //  가려짐 (낮은 인덱스 아이템 하단으로 사라짐)
                                 for (int line = 0; line < LineRow; line++)
                                 {
                                     var prevItem = ScrollItemList.FirstOrDefault();
@@ -426,7 +424,7 @@ namespace skfksky1004.DevKit.UI
                                     }
                                 }
 
-                                //  추가
+                                //  추가 (높은 인덱스 아이템 상단에서 등장)
                                 for (int line = 0; line < LineRow; line++)
                                 {
                                     var nextIndex = lastIndex + 1;
@@ -443,30 +441,31 @@ namespace skfksky1004.DevKit.UI
                                 }
                             }
 
-                            PrevPageNo = pageNo >= 0
-                                ? pageNo
-                                : 0;
+                            PrevPageNo = pageNo > MaxPageNo
+                                ? MaxPageNo
+                                : pageNo;
                         }
                     }
 
-                    if (pageNo > PrevPageNo && pageNo <= MaxPageNo)
+                    //  아래로 스크롤 (낮은 인덱스 아이템 복귀)
+                    if (pageNo < PrevPageNo && pageNo >= 0)
                     {
                         var firstIndex = (int)ScrollItemList.FirstOrDefault()?.ItemIndex;
                         if (firstIndex >= 0)
                         {
                             for (int i = 0; i < count; i++)
                             {
+                                var remainder = createCount % LineRow;
                                 var tempMax = ScrollItemList.LastOrDefault().ItemIndex == createCount - 1
-                                    ? createCount % LineRow
+                                    ? (remainder == 0 ? LineRow : remainder)
                                     : LineRow;
 
-                                //  가려짐
+                                //  가려짐 (높은 인덱스 아이템 상단으로 사라짐)
                                 for (int line = 0; line < tempMax; line++)
                                 {
                                     var prevItem = ScrollItemList.LastOrDefault();
                                     var checkSize =
                                         (Vector2)Camera.main.WorldToScreenPoint(prevItem.transform.position);
-                                    checkSize.y -= prevItem.ItemSize.y;
                                     if (RectTransformUtility.RectangleContainsScreenPoint(ScrollRect.viewport,
                                             checkSize,
                                             Camera.main) == false)
@@ -476,7 +475,7 @@ namespace skfksky1004.DevKit.UI
                                     }
                                 }
 
-                                //  추가
+                                //  추가 (낮은 인덱스 아이템 하단에서 복귀)
                                 for (int line = 0; line < LineRow; line++)
                                 {
                                     if (firstIndex <= 0)
@@ -492,9 +491,9 @@ namespace skfksky1004.DevKit.UI
                                 }
                             }
 
-                            PrevPageNo = pageNo > MaxPageNo
-                                ? MaxPageNo
-                                : pageNo;
+                            PrevPageNo = pageNo >= 0
+                                ? pageNo
+                                : 0;
                         }
                     }
 
@@ -742,7 +741,15 @@ namespace skfksky1004.DevKit.UI
 
                 return contentPos;
             }
-            else //  위로든 아래로든
+            else if (scrollType == eScrollType.Bottom_To_Up)
+            {
+                var maxHeight = (ScrollRect.content.sizeDelta.y - rect.sizeDelta.y);
+                var pos = contentPos.y * -1;
+                if (pos < 0) return new Vector2(0, 0);
+                if (pos > maxHeight) return new Vector2(contentPos.x, maxHeight);
+                return new Vector2(contentPos.x, pos);
+            }
+            else //  Top_To_Down
             {
                 var maxHeight = (ScrollRect.content.sizeDelta.y - rect.sizeDelta.y);
                 if (contentPos.y < 0)

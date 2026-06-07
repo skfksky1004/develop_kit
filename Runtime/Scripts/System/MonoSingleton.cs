@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace skfksky1004.DevKit
+namespace GameCreateTool.DevKit
 {
     public abstract class MonoSingleton<T> : MonoBehaviour where T : MonoSingleton<T>
     {

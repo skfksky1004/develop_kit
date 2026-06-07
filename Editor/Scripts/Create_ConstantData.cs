@@ -8,7 +8,7 @@ using UnityEngine;
 
 #if UNITY_EDITOR
 
-namespace skfksky1004.DevKit
+namespace GameCreateTool.DevKit
 {
     /// <summary>
     ///     설명서

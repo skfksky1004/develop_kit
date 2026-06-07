@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace skfksky1004.DevKit.UI
+namespace GameCreateTool.DevKit.UI
 {
     public class BaseScrollPool : MonoBehaviour
     {
