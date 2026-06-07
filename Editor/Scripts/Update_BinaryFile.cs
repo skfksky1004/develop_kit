@@ -4,7 +4,7 @@ using UnityEditor;
 using UnityEngine;
 
 #if UNITY_EDITOR    
-namespace GameCreateTool.DevKit
+namespace skfksky1004.DevKit
 {
     public class Update_BinaryFile : Editor
     {

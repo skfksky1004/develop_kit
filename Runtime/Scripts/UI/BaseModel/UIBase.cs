@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace GameCreateTool.DevKit.UI
+namespace skfksky1004.DevKit.UI
 {
     public abstract class UIBase : MonoBehaviour
     {

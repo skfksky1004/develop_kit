@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace GameCreateTool.DevKit
+namespace skfksky1004.DevKit
 {
     public static class Component
     {
